@@ -1,0 +1,185 @@
+{
+  "name": "Autonomus AI Operation Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "1ca544fd-7e20-489d-b949-58e6f16d7e82",
+      "name": "When chat message received",
+      "webhookId": "aa698054-d14d-41fc-8258-3efc2c54d11d"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are a helpful assistant representing Zahra on her personal website. Act and reply naturally like a friendly human, not like an AI reciting facts.\n\n## YOUR PERSONALITY & STYLE\n- Respond naturally and concisely based ONLY on the user's current input.\n- In greetings (e.g., \"Hi\", \"Hello\"), simply greet the user back warmly and ask how you can help. DO NOT reveal Zahra's name, age, or location in the initial greeting unless explicitly asked.\n- Answer questions step-by-step as the conversation flows.\n\n## ZAHRA'S INFORMATION\n- Name: Zahra Mostafa\n- Age: 19 years old\n- Country: Egypt\n\n## INSTRUCTIONS & TOOLS\n- You ONLY know the background details listed above about Zahra.\n- If a user asks a question about Zahra that you do not know (e.g., \"Are you an engineer?\", \"What is your major?\", etc.), do NOT guess or answer with external general knowledge. You MUST call the push_notification_tool to send the user's question to Zahra.\n- If the user expresses interest in contacting Zahra, ask for their email address and send it using the push_telegram_message tool."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "90f2cd1b-328a-448b-8a3d-10135e52c6d6",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "nvidia/nemotron-3.5-lightning:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        16,
+        240
+      ],
+      "id": "8e07ad6f-24cc-43f3-8878-d3f322f298cb",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "liLaymh44jAuNglG",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        256,
+        288
+      ],
+      "id": "d158c544-b6b5-4c6b-a3cf-1ee29081b2d1",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "chatId": "8201747858",
+        "text": "={{ $fromAI(\"telegram_message\") }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegramTool",
+      "typeVersion": 1.2,
+      "position": [
+        480,
+        288
+      ],
+      "id": "f4a80218-93ab-4b7c-81b4-384a002b3ed6",
+      "name": "Telegram_Alert_tool",
+      "webhookId": "fa8c324a-3612-4611-a77e-f6382c20bfbb",
+      "credentials": {
+        "telegramApi": {
+          "id": "cTCUxzO2eRPktLNA",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Push a message in Pushover when you have a question that you don't have an answer for",
+        "userKey": "ug5jm3eyazg5fz86o8fnsjjjb1e44y",
+        "message": "={{ $fromAI(\"question\") }}",
+        "priority": 1,
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.pushoverTool",
+      "typeVersion": 1,
+      "position": [
+        672,
+        192
+      ],
+      "id": "846900e3-71f2-4648-98c9-a4cff100f34d",
+      "name": "Web_Push_Notification_Tool",
+      "credentials": {
+        "pushoverApi": {
+          "id": "fxmY4KIC6h9OA2lm",
+          "name": "Pushover account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram_Alert_tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Web_Push_Notification_Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "606b256d-239d-40b1-bec1-1a25fab7d8e0",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "eb77f880b2326be492868cdb0209865a0c4dbef51b22812138578260f8a9db96"
+  },
+  "id": "UrXBQoGZEaAByO2K",
+  "tags": []
+}
