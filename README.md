@@ -43,6 +43,11 @@ Incoming Chat Message
        ↙       ↘
  Telegram     Web Push
  Notification Notification
+
+ ## 🎬 Real Estate Speed-to-Lead Live Demo
+![Ahréza Real Estate Demo](download2-ezgif.com-video-to-gif-converter.gif)
+
+💰 **Launch Offer:** $800 Setup + $200 Monthly Maintenance.
   
     
       
